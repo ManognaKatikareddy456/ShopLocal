@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "968032292039",
+    "project_id": "shoplocal-55672",
+    "storage_bucket": "shoplocal-55672.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968032292039:android:25e9c13c9d6ee1caf402e2",
+        "android_client_info": {
+          "package_name": "uk.ac.tees.mad.shoplocal"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCthPcwxnRE51Zl1uLH-b_dyj8OSLusgqk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
