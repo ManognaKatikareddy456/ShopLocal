@@ -97,4 +97,9 @@ dependencies {
     implementation(libs.coil.network.okhttp)
 //    SplashScreen
     implementation(libs.androidx.core.splashscreen)
+    //       Navigation
+    implementation("androidx.navigation:navigation-compose:2.8.0")
+
+
+
 }

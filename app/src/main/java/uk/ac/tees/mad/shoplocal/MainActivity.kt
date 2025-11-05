@@ -11,18 +11,30 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.hilt.navigation.compose.hiltViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.AuthViewModel
+import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.HomeViewModel
+import uk.ac.tees.mad.shoplocal.presentation.navigation.Navigation
 import uk.ac.tees.mad.shoplocal.ui.theme.ShopLocalTheme
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        installSplashScreen()
         enableEdgeToEdge()
         setContent {
+            val authViewModel: AuthViewModel = hiltViewModel()
+            val homeViewModel: HomeViewModel = hiltViewModel()
             ShopLocalTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
+
+
+                    Navigation(
+                        modifier = Modifier.padding(innerPadding),
+                        authViewModel = authViewModel,
+                        homeViewModel = homeViewModel
                     )
                 }
             }
