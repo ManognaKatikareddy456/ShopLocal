@@ -55,6 +55,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
+    implementation(libs.play.services.location)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,23 +64,29 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    //    Kotlin Serialization
+//  Kotlin Serialization
     implementation(libs.kotlinx.serialization)
 
 
-//    Hilt
+//  Hilt
     implementation("com.google.dagger:hilt-android:2.57.1")
     kapt("com.google.dagger:hilt-compiler:2.57.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
-//    Room
 
+//  Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.8.8")
+    implementation("io.ktor:ktor-client-okhttp:2.3.3")
+
+//  Room
     implementation("androidx.room:room-runtime:2.7.0-alpha05")
     kapt("androidx.room:room-compiler:2.7.0-alpha05")
     implementation("androidx.room:room-ktx:2.7.0-alpha05")
 
 
-//    supa_base
+//  supa_base
     implementation("io.github.jan-tennert.supabase:gotrue-kt:1.3.2")
     implementation("io.github.jan-tennert.supabase:compose-auth:1.3.2")
     implementation("io.github.jan-tennert.supabase:compose-auth-ui:1.3.2")
@@ -87,19 +94,17 @@ dependencies {
     implementation("io.ktor:ktor-client-cio:2.3.4")
 
 
-//    Coroutines
+//  Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 
-//    Coil
-
+//  Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
-//    SplashScreen
+//  SplashScreen
     implementation(libs.androidx.core.splashscreen)
-    //       Navigation
+//  Navigation
     implementation("androidx.navigation:navigation-compose:2.8.0")
-
 
 
 }
