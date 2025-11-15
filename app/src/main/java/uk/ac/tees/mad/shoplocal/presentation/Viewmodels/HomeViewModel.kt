@@ -6,6 +6,7 @@ import android.content.Context
 import android.location.Geocoder
 import android.util.Log
 import android.widget.Toast
+import androidx.fragment.app.strictmode.SetRetainInstanceUsageViolation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.location.LocationServices
@@ -52,15 +53,18 @@ class HomeViewModel @Inject constructor(
     }
 
     fun fetchYelpData(
-        term: String, latitude: Double,
-        longitude: Double,
+        term: String,
+        cityName: String
+//        latitude: Double,
+//        longitude: Double,
     ) {
 
         viewModelScope.launch {
             yelpUseCase.invoke(
                 term = term,
-                latitude = latitude,
-                longitude = longitude,
+                cityName = cityName
+//                latitude = latitude,
+//                longitude = longitude,
             ).onStart {
                 _uiState.update {
                     YelpScreenData.UiState(isLoading = true)
@@ -69,10 +73,16 @@ class HomeViewModel @Inject constructor(
                 Log.d("yelp", "Fetching shop data...")
             }.collect { result ->
                 result.onSuccess { data ->
-                    YelpScreenData.UiState(data = data)
+                    _uiState.update {
+                        YelpScreenData.UiState(data = data, isLoading = false)
+                    }
+
                     Log.d("yelp2", "$data")
                 }.onFailure { error ->
-                    YelpScreenData.UiState(error = error.message.toString())
+                    _uiState.update {
+                        YelpScreenData.UiState(error = error.message.toString())
+                    }
+
                     Log.e("yelp2", " Error fetching shop data: ${error.message}")
                 }
             }
@@ -129,7 +139,8 @@ data object YelpScreenData {
     data class ListOfBusiness(
         val isLoading: Boolean = false,
         val error: String = "",
-        val data: List<Business>? = null,)
+        val data: List<Business>? = null,
+    )
 
 
 }

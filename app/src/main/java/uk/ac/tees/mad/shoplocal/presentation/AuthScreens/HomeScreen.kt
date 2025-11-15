@@ -1,5 +1,6 @@
 package uk.ac.tees.mad.shoplocal.presentation.AuthScreens
 
+import android.R.attr.onClick
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -38,6 +40,7 @@ import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -78,9 +81,22 @@ fun HomeScreen(
     homeViewModel: HomeViewModel,
 ) {
 
-    val listOfBusiness by    homeViewModel.listOfBusiness.collectAsStateWithLifecycle()
+    val listOfBusiness by homeViewModel.listOfBusiness.collectAsStateWithLifecycle()
+    val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+
+//        homeViewModel.fetchYelpData2(
+//            term = "restaurant", cityName = "New York"
+//        )
+//        homeViewModel.fetchYelpData(
+//            term = "shop",
+////            latitude = 19.0760,
+////            longitude = 72.8777,
+//        )
 
 
+    }
 
     var cityName by remember { mutableStateOf("") }
     val foucusManager = LocalFocusManager.current
@@ -89,6 +105,7 @@ fun HomeScreen(
     val focusRequester = remember { FocusRequester() }
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+
 
     var selectedKeyword by remember { mutableStateOf<String>("") }
 
@@ -155,10 +172,7 @@ fun HomeScreen(
 
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
 
@@ -184,9 +198,8 @@ fun HomeScreen(
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        homeViewModel.fetchYelpData2(
-                            term = selectedKeyword,
-                            cityName = cityName
+                        homeViewModel.fetchYelpData(
+                            term = selectedKeyword, cityName = cityName
                         )
                     }
 
@@ -229,54 +242,67 @@ fun HomeScreen(
 
                     SuggestionChip(
                         onClick = {
-                            selectedKeyword = keyword
-                            keyboardController?.hide()
-                            foucusManager.clearFocus()
-                        },
-                        label = {
-                            Text(
-                                text = keyword,
-                                color = if (selectedKeyword == keyword) Color.White else Color.Black
+                        selectedKeyword = keyword
+
+                        if (selectedKeyword.isBlank() || cityName.isBlank()) {
+                            Toast.makeText(
+                                context,
+                                "Please select a category and enter a city name",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            homeViewModel.fetchYelpData(
+                                term = selectedKeyword, cityName = cityName
                             )
-                        },
-                        colors = SuggestionChipDefaults.suggestionChipColors(
-                            containerColor = if (selectedKeyword == keyword)
-                                Color(0xFF0184FE)
-                            else
-                                Color(0xFFF2F2F2)
+                        }
+                        keyboardController?.hide()
+                        foucusManager.clearFocus()
+                    }, label = {
+                        Text(
+                            text = keyword,
+                            color = if (selectedKeyword == keyword) Color.White else Color.Black
                         )
+                    }, colors = SuggestionChipDefaults.suggestionChipColors(
+                        containerColor = if (selectedKeyword == keyword) Color(0xFF0184FE)
+                        else Color(0xFFF2F2F2)
+                    )
                     )
                 }
 
             }
-            Text("${listOfBusiness.data}")
-
-            if (listOfBusiness.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(48.dp),
-                    color = Color(0xFF0184FE),
-                    strokeWidth = 4.dp
-                )
+            val listOfBusiness = uiState.data?.businesses
+            listOfBusiness?.let() { list ->
+                LazyColumn {
+                    items(list) { business ->
+                        BusinessCard(business)
+                    }
+                }
             }
-
-
 
 
         }
 
+        if (uiState.isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(48.dp), color = Color(0xFF0184FE), strokeWidth = 4.dp
+            )
+        } else {
+            Text(uiState.error)
+        }
 
     }
 
 
 }
 
+
 @Composable
-fun BusinessCard(business: Business, onClick: () -> Unit) {
+fun BusinessCard(business: Business) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 12.dp, vertical = 6.dp)
-            .clickable { onClick() },
+            .clickable { },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
@@ -317,9 +343,7 @@ fun BusinessCard(business: Business, onClick: () -> Unit) {
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "⭐ ${business.rating}",
-                    fontSize = 14.sp,
-                    color = Color(0xFF0184FE)
+                    text = "⭐ ${business.rating}", fontSize = 14.sp, color = Color(0xFF0184FE)
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
