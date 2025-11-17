@@ -36,10 +36,11 @@ class AuthViewModel @Inject constructor() : ViewModel() {
                             val userInfo = PostUserInfo(
                                 profileImageUrl = "",
                                 title = "Buyer",
-                                mobNumber = "8989898988",
+                                mobNumber = "",
                                 name = name,
                                 email = email,
-                                passkey = password
+                                passkey = password,
+                                shopId = emptyList()
                             )
 
                             db.collection("user").document(userId).set(userInfo)
@@ -105,6 +106,7 @@ data class PostUserInfo(
     val name: String,
     val email: String,
     val passkey: String,
+    val shopId: List<String>
 
 )
 
@@ -115,5 +117,6 @@ data class GetUserInfo(
     val name: String = "",
     val email: String = "",
     val passkey: String = "",
+    val shopId: List<String>
 
 )

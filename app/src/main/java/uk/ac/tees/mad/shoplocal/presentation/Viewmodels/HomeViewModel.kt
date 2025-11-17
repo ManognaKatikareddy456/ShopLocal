@@ -1,15 +1,11 @@
 package uk.ac.tees.mad.shoplocal.presentation.Viewmodels
 
-import android.R.attr.data
-import android.annotation.SuppressLint
-import android.content.Context
-import android.location.Geocoder
 import android.util.Log
-import android.widget.Toast
-import androidx.fragment.app.strictmode.SetRetainInstanceUsageViolation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.android.gms.location.LocationServices
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +17,6 @@ import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.Business
 import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.YelpBusinessResponse
 import uk.ac.tees.mad.shoplocal.domain.usecase.YelpUseCase
 import uk.ac.tees.mad.shoplocal.domain.usecase.YelpUseCaseSlowUseCase
-import java.util.Locale
 
 import javax.inject.Inject
 
@@ -39,18 +34,7 @@ class HomeViewModel @Inject constructor(
     val listOfBusiness = _listOfBusiness.asStateFlow()
 
 
-    init {
 
-//        fetchYelpData(
-//            term = "shop",
-//            latitude = 19.0760,
-//            longitude = 72.8777,
-//        )
-//        fetchYelpData2(
-//            term = "restaurant",
-//            cityName = "New York"
-//        )
-    }
 
     fun fetchYelpData(
         term: String,
@@ -124,6 +108,59 @@ class HomeViewModel @Inject constructor(
         }
 
     }
+    val db = FirebaseFirestore.getInstance()
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    val firestore = FirebaseFirestore.getInstance()
+
+    fun addShop(
+        id: String,
+        name: String,
+        rating: String,
+        review_count: String,
+        price: String,
+        phone: String,
+        url: String,
+        image_url: String,
+        address1: String,
+        city: String,
+        state: String,
+        country: String,
+        latitude: String,
+        longitude: String,
+
+        onResult: (
+            Boolean,
+            String?,
+        ) -> Unit,
+
+
+        ) {
+        val uid = auth.currentUser?.uid ?: return onResult(false, "User not logged in")
+
+        val userRef = firestore.collection("user").document(uid)
+
+        userRef.get().addOnSuccessListener { doc ->
+            val savedShop = doc.get("savedShop") as? List<String> ?: emptyList()
+
+            if (savedShop.contains(id)) {
+                onResult(false, "This shop is already in your saved list.")
+            } else {
+                userRef.update("savedShop", FieldValue.arrayUnion(id))
+                    .addOnSuccessListener {
+                        onResult(true, "Shop added successfully.")
+                    }.addOnFailureListener { e ->
+                        onResult(false, e.message)
+                    }
+            }
+        }.addOnFailureListener { e ->
+            onResult(false, e.message)
+        }
+
+    }
+
+
+
+
 }
 
 
@@ -132,9 +169,9 @@ data object YelpScreenData {
     data class UiState(
         val isLoading: Boolean = false,
         val error: String = "",
-        val data: YelpBusinessResponse? = null,
+        val data: YelpBusinessResponse? = null, )
 
-        )
+
 
     data class ListOfBusiness(
         val isLoading: Boolean = false,

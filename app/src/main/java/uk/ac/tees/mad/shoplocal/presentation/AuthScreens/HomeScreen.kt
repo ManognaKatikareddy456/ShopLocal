@@ -68,9 +68,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.compose
 import kotlinx.coroutines.launch
+import okhttp3.Route
 import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.Business
 import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.AuthViewModel
 import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.HomeViewModel
+import uk.ac.tees.mad.shoplocal.presentation.navigation.Routes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,7 +100,7 @@ fun HomeScreen(
 
     }
 
-    var cityName by remember { mutableStateOf("") }
+    var cityName by remember { mutableStateOf("Toronto") }
     val foucusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var isSugsetionVisible by remember { mutableStateOf(false) }
@@ -107,7 +109,7 @@ fun HomeScreen(
     val context = LocalContext.current
 
 
-    var selectedKeyword by remember { mutableStateOf<String>("") }
+    var selectedKeyword by remember { mutableStateOf<String>("shop") }
 
 
     val searchKeywords: List<String> = listOf(
@@ -242,30 +244,30 @@ fun HomeScreen(
 
                     SuggestionChip(
                         onClick = {
-                        selectedKeyword = keyword
+                            selectedKeyword = keyword
 
-                        if (selectedKeyword.isBlank() || cityName.isBlank()) {
-                            Toast.makeText(
-                                context,
-                                "Please select a category and enter a city name",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        } else {
-                            homeViewModel.fetchYelpData(
-                                term = selectedKeyword, cityName = cityName
+                            if (selectedKeyword.isBlank() || cityName.isBlank()) {
+                                Toast.makeText(
+                                    context,
+                                    "Please select a category and enter a city name",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                homeViewModel.fetchYelpData(
+                                    term = selectedKeyword, cityName = cityName
+                                )
+                            }
+                            keyboardController?.hide()
+                            foucusManager.clearFocus()
+                        }, label = {
+                            Text(
+                                text = keyword,
+                                color = if (selectedKeyword == keyword) Color.White else Color.Black
                             )
-                        }
-                        keyboardController?.hide()
-                        foucusManager.clearFocus()
-                    }, label = {
-                        Text(
-                            text = keyword,
-                            color = if (selectedKeyword == keyword) Color.White else Color.Black
+                        }, colors = SuggestionChipDefaults.suggestionChipColors(
+                            containerColor = if (selectedKeyword == keyword) Color(0xFF0184FE)
+                            else Color(0xFFF2F2F2)
                         )
-                    }, colors = SuggestionChipDefaults.suggestionChipColors(
-                        containerColor = if (selectedKeyword == keyword) Color(0xFF0184FE)
-                        else Color(0xFFF2F2F2)
-                    )
                     )
                 }
 
@@ -274,7 +276,7 @@ fun HomeScreen(
             listOfBusiness?.let() { list ->
                 LazyColumn {
                     items(list) { business ->
-                        BusinessCard(business)
+                        BusinessCard(business, navController)
                     }
                 }
             }
@@ -297,18 +299,39 @@ fun HomeScreen(
 
 
 @Composable
-fun BusinessCard(business: Business) {
+fun BusinessCard(business: Business, navHostController: NavHostController) {
     Card(
         modifier = Modifier
+            .height(170.dp)
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp)
-            .clickable { },
+            .padding(horizontal = 0.dp, vertical = 6.dp)
+            .clickable {
+                navHostController.navigate(
+                    Routes.ShopDetailArgs(
+                        id = business.id,
+                        name = business.name,
+                        rating = business.rating.toString(),
+                        reviewCount = business.review_count.toString(),
+                        price = business.price ?: "",
+                        phone = business.phone ?: "",
+                        url = business.url,
+                        imageUrl = business.image_url,
+                        address1 = business.location.address1,
+                        city = business.location.city,
+                        state = business.location.state,
+                        country = business.location.country,
+                        latitude = business.coordinates.latitude.toString(),
+                        longitude = business.coordinates.longitude.toString()
+                    )
+
+                )
+            },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .background(Color.White)
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -319,13 +342,14 @@ fun BusinessCard(business: Business) {
                 model = business.image_url,
                 contentDescription = business.name,
                 modifier = Modifier
-                    .size(70.dp)
+                    .height(130.dp)
+                    .width(130.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(Color.LightGray),
                 contentScale = ContentScale.Crop
             )
 
-            Spacer(modifier = Modifier.width(10.dp))
+            Spacer(modifier = Modifier.width(20.dp))
 
 
             Column(
@@ -342,14 +366,22 @@ fun BusinessCard(business: Business) {
 
                 Spacer(modifier = Modifier.height(4.dp))
 
-                Text(
-                    text = "⭐ ${business.rating}", fontSize = 14.sp, color = Color(0xFF0184FE)
-                )
+
 
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
                     text = business.location.city ?: "",
+                    fontSize = 13.sp,
+                    color = Color.Gray,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = "⭐ ${business.rating}", fontSize = 14.sp, color = Color(0xFF0184FE)
+                )
+                Text(
+                    text = "Ratting Count:${business.review_count}" ?: "",
                     fontSize = 13.sp,
                     color = Color.Gray,
                     maxLines = 1,
