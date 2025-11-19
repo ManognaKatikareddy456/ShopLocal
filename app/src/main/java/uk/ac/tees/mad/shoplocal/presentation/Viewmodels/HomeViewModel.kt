@@ -7,12 +7,15 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import uk.ac.tees.mad.shoplocal.data.local.ShopDao
+import uk.ac.tees.mad.shoplocal.data.local.ShopEntity
 import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.Business
 import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.YelpBusinessResponse
 import uk.ac.tees.mad.shoplocal.domain.usecase.YelpUseCase
@@ -24,6 +27,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val yelpUseCase: YelpUseCase,
     private val yelpUseCaseSlow: YelpUseCaseSlowUseCase,
+    private val shopDao: ShopDao,
 
     ) : ViewModel() {
 
@@ -34,11 +38,9 @@ class HomeViewModel @Inject constructor(
     val listOfBusiness = _listOfBusiness.asStateFlow()
 
 
-
-
     fun fetchYelpData(
         term: String,
-        cityName: String
+        cityName: String,
 //        latitude: Double,
 //        longitude: Double,
     ) {
@@ -108,6 +110,7 @@ class HomeViewModel @Inject constructor(
         }
 
     }
+
     val db = FirebaseFirestore.getInstance()
     val auth: FirebaseAuth = FirebaseAuth.getInstance()
     val firestore = FirebaseFirestore.getInstance()
@@ -155,10 +158,28 @@ class HomeViewModel @Inject constructor(
         }.addOnFailureListener { e ->
             onResult(false, e.message)
         }
+        viewModelScope.launch(Dispatchers.IO) {
+            shopDao.insert(
+                shopEntity = ShopEntity(
+                    id = id,
+                    name = name,
+                    rating = rating,
+                    price = price,
+                    reviewCount = review_count,
+                    phone = phone,
+                    url = url,
+                    imageUrl = image_url,
+                    address1 = address1,
+                    city = city,
+                    state = state,
+                    country = country,
+                    latitude = latitude,
+                    longitude = longitude
+                )
+            )
+        }
 
     }
-
-
 
 
 }
@@ -169,8 +190,8 @@ data object YelpScreenData {
     data class UiState(
         val isLoading: Boolean = false,
         val error: String = "",
-        val data: YelpBusinessResponse? = null, )
-
+        val data: YelpBusinessResponse? = null,
+    )
 
 
     data class ListOfBusiness(
