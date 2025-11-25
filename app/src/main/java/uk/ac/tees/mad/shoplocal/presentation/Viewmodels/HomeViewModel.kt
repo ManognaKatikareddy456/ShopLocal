@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import uk.ac.tees.mad.shoplocal.data.local.ShopDao
 import uk.ac.tees.mad.shoplocal.data.local.ShopEntity
 import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.Business
@@ -180,6 +181,45 @@ class HomeViewModel @Inject constructor(
         }
 
     }
+
+
+    private val _isLoading = MutableStateFlow(false)
+    var isLoading: StateFlow<Boolean> = _isLoading
+
+    private val _savedShop = MutableStateFlow<List<ShopEntity>>(emptyList())
+
+    val savedShop: StateFlow<List<ShopEntity>> = _savedShop
+
+    fun getSavedShop() {
+        val uid = auth.currentUser?.uid ?: return
+
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                _isLoading.value = true
+
+                // Get saved shop IDs from Firestore
+                val snapshot = firestore.collection("user").document(uid).get().await()
+                val savedShop = snapshot.get("savedShop") as? List<String> ?: emptyList()
+
+                // Observe local Room DB for matching shops
+                shopDao.getShopByIds(savedShop).collect { shopData ->
+                    _savedShop.value = shopData
+                }
+
+            } catch (e: Exception) {
+                Log.e("Firestore", "Error fetching saved shops: ${e.message}")
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+
+
+
+
+
+
 
 
 }

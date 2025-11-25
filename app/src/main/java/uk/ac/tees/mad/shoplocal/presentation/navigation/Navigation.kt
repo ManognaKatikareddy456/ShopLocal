@@ -17,6 +17,7 @@ import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.AuthScreen
 
 import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.HomeScreen
 import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.LoginScreen
+import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.MyShopScreen
 import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.ProfileScreen
 
 import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.SingInScreen
@@ -94,6 +95,23 @@ fun Navigation(
             )
 
         }
+
+        composable<Routes.MyShops> {
+            MyShopScreen(navController =navController, homeViewModel = homeViewModel)
+
+        }
+
+
+
+        composable<Routes.ProfileScreen> {
+
+
+            ProfileScreen(navController = navController)
+
+        }
+
+
+
 
         composable<Routes.ShopDetailArgs> {
             val args = it.toRoute<Routes.ShopDetailArgs>()

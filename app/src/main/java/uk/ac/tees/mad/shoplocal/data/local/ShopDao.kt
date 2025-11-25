@@ -14,8 +14,9 @@ interface ShopDao {
     @Query("DELETE FROM shop_table WHERE Id = :id")
     suspend fun deleteById(id: String)
 
-    @Query("SELECT * FROM shop_table WHERE Id IN (:ids) ORDER BY name ASC")
-    fun getPlantsByIds(ids: List<String>): Flow<List<ShopEntity>>
+    @Query("SELECT * FROM shop_table WHERE id IN (:ids)")
+    fun getShopByIds(ids: List<String>): Flow<List<ShopEntity>>
+
 
 
 }
