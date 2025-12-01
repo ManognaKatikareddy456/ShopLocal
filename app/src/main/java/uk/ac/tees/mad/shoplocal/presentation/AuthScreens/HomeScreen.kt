@@ -59,12 +59,10 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -73,8 +71,6 @@ import kotlinx.coroutines.flow.compose
 import kotlinx.coroutines.launch
 import okhttp3.Route
 import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.Business
-import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.Coordinates
-import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.Location
 import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.AuthViewModel
 import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.HomeViewModel
 import uk.ac.tees.mad.shoplocal.presentation.navigation.Routes
@@ -410,99 +406,3 @@ fun BusinessCard(business: Business, navHostController: NavHostController) {
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true, name = "Home Screen - With Sample Data")
-@Composable
-fun HomeScreenPreview() {
-    val primaryBlue = Color(0xFF0184FE)
-    var cityName by remember { mutableStateOf("Toronto") }
-    var selectedKeyword by remember { mutableStateOf("cafe") }
-    val isLoading = false
-
-    val sampleBusinesses = listOf(
-        Business(
-            id = "1",
-            name = "The Morning Brew Cafe",
-            rating = 4.8,
-            review_count = 342,
-            price = "$$",
-            phone = "+14165551234",
-            url = "",
-            image_url = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800",
-            location = Location(
-                address1 = "123 Queen St",
-                city = "Toronto",
-                state = "ON",
-                country = "CA"
-            ),
-            coordinates = Coordinates(latitude = 43.65, longitude = -79.38)
-        ),
-        Business(
-            id = "2",
-            name = "Blue Sail Coffee",
-            rating = 4.6,
-            review_count = 289,
-            price = "$",
-            phone = "+14169876543",
-            url = "",
-            image_url = "https://images.unsplash.com/photo-1504754524776-869f2f54a7a8?w=800",
-            location = Location(address1 = "456 King St W", city = "Toronto", state = "ON", country = "CA"),
-            coordinates = Coordinates(latitude = 43.65, longitude = -79.38)
-        )
-    )
-
-    val searchKeywords = listOf("shop", "cafe", "restaurant", "grocery", "bakery", "electronics", "salon", "gym")
-
-    Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-            SearchBar(
-                query = cityName,
-                onQueryChange = { cityName = it },
-                onSearch = { },
-                active = false,
-                onActiveChange = { },
-                placeholder = { Text("Search city...") },
-                leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                trailingIcon = {
-                    if (cityName.isNotEmpty()) {
-                        IconButton(onClick = { cityName = "" }) {
-                            Icon(Icons.Filled.Close, contentDescription = "Clear")
-                        }
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {}
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            LazyRow(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                items(searchKeywords) { keyword ->
-                    SuggestionChip(
-                        onClick = { selectedKeyword = keyword },
-                        label = {
-                            Text(
-                                text = keyword.replaceFirstChar { it.uppercase() },
-                                color = if (selectedKeyword == keyword) Color.White else Color.Black
-                            )
-                        },
-                        colors = SuggestionChipDefaults.suggestionChipColors(
-                            containerColor = if (selectedKeyword == keyword) primaryBlue else Color(0xFFF2F2F2)
-                        )
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                items(sampleBusinesses) { business ->
-                    BusinessCard(business = business, navHostController = rememberNavController())
-                }
-            }
-        }
-
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.size(48.dp), color = primaryBlue, strokeWidth = 4.dp)
-        }
-    }
-}

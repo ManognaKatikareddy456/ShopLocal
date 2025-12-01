@@ -194,31 +194,53 @@ class HomeViewModel @Inject constructor(
         val uid = auth.currentUser?.uid ?: return
 
         viewModelScope.launch(Dispatchers.IO) {
+            _isLoading.value = true
             try {
-                _isLoading.value = true
 
-                // Get saved shop IDs from Firestore
+
+
                 val snapshot = firestore.collection("user").document(uid).get().await()
                 val savedShop = snapshot.get("savedShop") as? List<String> ?: emptyList()
 
-                // Observe local Room DB for matching shops
+
                 shopDao.getShopByIds(savedShop).collect { shopData ->
                     _savedShop.value = shopData
                 }
 
+
             } catch (e: Exception) {
                 Log.e("Firestore", "Error fetching saved shops: ${e.message}")
-            } finally {
-                _isLoading.value = false
+
             }
+            _isLoading.value = false
         }
     }
 
 
+    private val _currentUserData = MutableStateFlow(GetUserInfo())
+    val currentUserData: StateFlow<GetUserInfo> = _currentUserData
 
 
+    fun fetchCurrentUserData() {
+        auth.currentUser?.uid?.let { userId ->
 
+            db.collection("user").document(userId).addSnapshotListener { snapshot, e ->
 
+                if (e != null) {
+
+                    return@addSnapshotListener
+                }
+
+                if (snapshot != null && snapshot.exists()) {
+                    val data = snapshot.toObject(GetUserInfo::class.java)
+                    data?.let {
+                        _currentUserData.value = it
+                        Log.d("Firestore","$it")
+                    }
+                }
+            }
+        }
+    }
 
 
 

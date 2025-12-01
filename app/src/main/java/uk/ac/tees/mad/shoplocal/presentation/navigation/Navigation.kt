@@ -106,7 +106,9 @@ fun Navigation(
         composable<Routes.ProfileScreen> {
 
 
-            ProfileScreen(navController = navController)
+            ProfileScreen(navController = navController, homeViewModel = homeViewModel)
+
+
 
         }
 

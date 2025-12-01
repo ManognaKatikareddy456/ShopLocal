@@ -117,6 +117,6 @@ data class GetUserInfo(
     val name: String = "",
     val email: String = "",
     val passkey: String = "",
-    val shopId: List<String>
+    val shopId: List<String> = emptyList<String>()
 
 )

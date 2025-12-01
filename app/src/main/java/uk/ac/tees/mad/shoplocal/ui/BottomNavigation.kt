@@ -83,7 +83,7 @@ fun BottomNavigation(navController: NavHostController, modifier: Modifier = Modi
                     Icon(
                         imageVector = if (isSelected) navItem.filledIcon else navItem.outlinedIcon,
                         contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onBackground
+                        tint = MaterialTheme.colorScheme.background
 
                     )
                 },
@@ -91,7 +91,7 @@ fun BottomNavigation(navController: NavHostController, modifier: Modifier = Modi
                     Text(
                         text = navItem.title,
                         modifier = Modifier.offset(y = (-4).dp),
-                        color = MaterialTheme.colorScheme.onBackground
+                        color =  MaterialTheme.colorScheme.background
                     )
                 }
             )

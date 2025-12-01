@@ -1,8 +1,10 @@
 package uk.ac.tees.mad.shoplocal.presentation.AuthScreens
 
+import android.R
+import android.R.attr.textColor
+import android.icu.text.CaseMap
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,8 +21,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,17 +38,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import uk.ac.tees.mad.shoplocal.data.local.ShopEntity
 import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.HomeViewModel
 import uk.ac.tees.mad.shoplocal.presentation.navigation.Routes
 import uk.ac.tees.mad.shoplocal.ui.BottomNavigation
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MyShopScreen(
     modifier: Modifier = Modifier,
@@ -52,29 +57,61 @@ fun MyShopScreen(
 
     var isLoading = homeViewModel.isLoading.collectAsState().value
     val savedShopList by homeViewModel.savedShop.collectAsState()
+
     LaunchedEffect(Unit) {
         homeViewModel.getSavedShop()
     }
 
     Scaffold(
-        bottomBar = { BottomNavigation(navController = navController) }
+        bottomBar = { BottomNavigation(navController = navController) },
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Your Shops",
+                        modifier = Modifier.padding(start = 10.dp),
+                        style = MaterialTheme.typography.titleLarge,
+                        color =  MaterialTheme.colorScheme.background
+                    )
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color(0xFF0184FE),
+
+                )
+            )
+        },
     ) { innerPadding ->
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(), contentAlignment = Alignment.CenterStart
-        ) {
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+
+            ) {
 
 
-                LazyColumn {
+            if (savedShopList.isEmpty()) {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(32.dp),
+                        color = Color(0xFF0184FE),
+                        strokeWidth = 2.dp
+                    )
+                } else {
+                    Text(
+                        text = "No Shop saved yet",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            } else {
+                LazyColumn(modifier.padding(8.dp)) {
                     items(savedShopList) {
                         MyShoopCard(
-                            shopEntity = it,
-                            navHostController = navController
+                            shopEntity = it, navHostController = navController
                         )
                     }
                 }
-
+            }
 
 
         }
@@ -170,124 +207,6 @@ fun MyShoopCard(shopEntity: ShopEntity, navHostController: NavHostController) {
                     color = Color.Gray,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
-                )
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true, name = "My Shops – With Saved Shops")
-@Composable
-fun MyShopScreenPreview_WithShops() {
-    val sampleShops = listOf(
-        ShopEntity(
-            id = "1",
-            name = "The Coffee Corner",
-            rating = "4.8",
-            reviewCount = "342",
-            price = "$$",
-            phone = "+44 1642 123456",
-            url = "",
-            imageUrl = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800",
-            address1 = "123 High Street",
-            city = "Middlesbrough",
-            state = "England",
-            country = "UK",
-            latitude = "54.5767",
-            longitude = "-1.2346"
-        ),
-        ShopEntity(
-            id = "2",
-            name = "Green Leaf Books",
-            rating = "4.9",
-            reviewCount = "189",
-            price = "$",
-            phone = "+44 1642 789012",
-            url = "",
-            imageUrl = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800",
-            address1 = "45 Albert Road",
-            city = "Middlesbrough",
-            state = "England",
-            country = "UK",
-            latitude = "54.5755",
-            longitude = "-1.2350"
-        ),
-        ShopEntity(
-            id = "3",
-            name = "Bakers Delight",
-            rating = "4.6",
-            reviewCount = "567",
-            price = "$",
-            phone = "+44 1642 345678",
-            url = "",
-            imageUrl = "https://images.unsplash.com/photo-1509440154593-7fc03a7f9d79?w=800",
-            address1 = "78 Linthorpe Road",
-            city = "Middlesbrough",
-            state = "England",
-            country = "UK",
-            latitude = "54.5772",
-            longitude = "-1.2331"
-        )
-    )
-
-    Scaffold(
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(66.dp)
-                    .background(Color.White.copy(alpha = 0.95f))
-            )
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            items(sampleShops) { shop ->
-                MyShoopCard(shopEntity = shop, navHostController = rememberNavController())
-            }
-        }
-    }
-}
-
-@Preview(showBackground = true, name = "My Shops – Empty State")
-@Composable
-fun MyShopScreenPreview_Empty() {
-    Scaffold(
-        bottomBar = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(66.dp)
-                    .background(Color.White.copy(alpha = 0.95f))
-            )
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = "No saved shops yet",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Gray
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = "Browse and save your favorite local shops!",
-                    fontSize = 16.sp,
-                    color = Color.Gray.copy(alpha = 0.8f),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
             }
         }
