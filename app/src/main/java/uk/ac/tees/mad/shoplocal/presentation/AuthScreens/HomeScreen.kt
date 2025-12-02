@@ -102,7 +102,7 @@ fun HomeScreen(
 
     }
 
-    var cityName by remember { mutableStateOf("Toronto") }
+    var cityName by remember { mutableStateOf("") }
     val foucusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     var isSugsetionVisible by remember { mutableStateOf(false) }
@@ -111,7 +111,7 @@ fun HomeScreen(
     val context = LocalContext.current
 
 
-    var selectedKeyword by remember { mutableStateOf<String>("shop") }
+    var selectedKeyword by remember { mutableStateOf<String>("") }
 
 
     val searchKeywords: List<String> = listOf(

@@ -3,6 +3,7 @@ package uk.ac.tees.mad.shoplocal.presentation.AuthScreens
 import android.R
 import android.R.attr.textColor
 import android.icu.text.CaseMap
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -18,10 +19,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -71,12 +77,12 @@ fun MyShopScreen(
                         text = "Your Shops",
                         modifier = Modifier.padding(start = 10.dp),
                         style = MaterialTheme.typography.titleLarge,
-                        color =  MaterialTheme.colorScheme.background
+                        color = MaterialTheme.colorScheme.background
                     )
                 }, colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color(0xFF0184FE),
 
-                )
+                    )
             )
         },
     ) { innerPadding ->
@@ -87,7 +93,7 @@ fun MyShopScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
 
-            ) {
+        ) {
 
 
             if (savedShopList.isEmpty()) {
@@ -107,7 +113,8 @@ fun MyShopScreen(
                 LazyColumn(modifier.padding(8.dp)) {
                     items(savedShopList) {
                         MyShoopCard(
-                            shopEntity = it, navHostController = navController
+                            shopEntity = it, navHostController = navController,
+                            homeViewModel = homeViewModel
                         )
                     }
                 }
@@ -120,7 +127,7 @@ fun MyShopScreen(
 
 
 @Composable
-fun MyShoopCard(shopEntity: ShopEntity, navHostController: NavHostController) {
+fun MyShoopCard(shopEntity: ShopEntity, navHostController: NavHostController,homeViewModel: HomeViewModel) {
     Card(
         modifier = Modifier
             .height(170.dp)
@@ -209,6 +216,40 @@ fun MyShoopCard(shopEntity: ShopEntity, navHostController: NavHostController) {
                     overflow = TextOverflow.Ellipsis
                 )
             }
+            val context = LocalContext.current
+            IconButton(
+                onClick = {
+
+                   homeViewModel.removeShop(
+                        shopId = shopEntity.id,
+                        onResult = { condition, message ->
+                            if (condition) {
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                                homeViewModel.getSavedShop()
+                            } else {
+                                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    )
+                },
+                modifier = Modifier
+                    .padding(6.dp)
+                    .size(40.dp)
+                    .background(
+                        color = Color(0xFFE3F2FD),
+                        shape = RoundedCornerShape(50)
+                    )
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete",
+                    tint = Color(0xFF0184FE),
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+
+
+
         }
     }
 }

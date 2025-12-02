@@ -26,6 +26,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import uk.ac.tees.mad.shoplocal.presentation.navigation.Routes
 import kotlin.collections.forEachIndexed
 
@@ -51,13 +52,16 @@ fun BottomNavigation(navController: NavHostController, modifier: Modifier = Modi
         )
     )
     var selectedIndex by rememberSaveable { mutableIntStateOf(1) }
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navController.currentDestination?.route
+
     NavigationBar(
         modifier = Modifier.height(70.dp),
         containerColor = Color(0xFF0184FE)
     ) {
         navItems.forEachIndexed { index, navItem ->
             val isSelected = selectedIndex == index
-            val currentRoute = navController.currentDestination?.route
+
             NavigationBarItem(
                 modifier = Modifier.offset(y = 10.dp),
                 selected = false,
@@ -81,7 +85,7 @@ fun BottomNavigation(navController: NavHostController, modifier: Modifier = Modi
                 },
                 icon = {
                     Icon(
-                        imageVector = if (isSelected) navItem.filledIcon else navItem.outlinedIcon,
+                        imageVector = if (selectedIndex == index) navItem.filledIcon else navItem.outlinedIcon,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.background
 

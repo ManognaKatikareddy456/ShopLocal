@@ -7,6 +7,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.github.jan.supabase.storage.storage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import uk.ac.tees.mad.planty.data.remote.supabase.SupabaseClientProvider
 import uk.ac.tees.mad.shoplocal.data.local.ShopDao
 import uk.ac.tees.mad.shoplocal.data.local.ShopEntity
 import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.Business
@@ -37,8 +39,15 @@ class HomeViewModel @Inject constructor(
 
     private val _listOfBusiness = MutableStateFlow(YelpScreenData.ListOfBusiness())
     val listOfBusiness = _listOfBusiness.asStateFlow()
+    val db = FirebaseFirestore.getInstance()
+    val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    val firestore = FirebaseFirestore.getInstance()
 
+    fun logoutUser() {
 
+        auth.signOut()
+
+    }
     fun fetchYelpData(
         term: String,
         cityName: String,
@@ -112,9 +121,7 @@ class HomeViewModel @Inject constructor(
 
     }
 
-    val db = FirebaseFirestore.getInstance()
-    val auth: FirebaseAuth = FirebaseAuth.getInstance()
-    val firestore = FirebaseFirestore.getInstance()
+
 
     fun addShop(
         id: String,
@@ -242,7 +249,69 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun updateProfile(
+        ProfielImageByteArray: ByteArray,
+        name: String,
+        mob: String,
+        onResult: (String, Boolean) -> Unit,
+    ) {
+        viewModelScope.launch {
+            val userId = auth.currentUser?.uid ?: return@launch
+            val imageFileName = "profile_images/$userId.jpg"
 
+            try {
+                val ImageBucket = SupabaseClientProvider.client.storage["profile_images"]
+                ImageBucket.upload(imageFileName, ProfielImageByteArray, upsert = true)
+
+
+                val profileImageUrl = ImageBucket.publicUrl(imageFileName)
+                val updates = mapOf(
+                    "profileImageUrl" to profileImageUrl,
+                    "name" to name,
+                    "mobNumber" to mob
+
+                )
+                db.collection("user").document(userId).update(updates).addOnSuccessListener {
+                    onResult("Profile Update Success", true)
+                }.addOnFailureListener { e ->
+                    onResult(e.toString(), false)
+                }
+
+            } catch (e: Exception) {
+                onResult(e.toString(), false)
+            }
+        }
+
+
+
+
+    }
+
+
+    fun removeShop(shopId: String, onResult: (Boolean, String?) -> Unit) {
+        val uid = auth.currentUser?.uid ?: return onResult(false, "User not logged in")
+        val userRef = firestore.collection("user").document(uid)
+
+        userRef.get().addOnSuccessListener { doc ->
+            val likedCities = doc.get("savedShop") as? List<String> ?: emptyList()
+
+            if (!likedCities.contains(shopId)) {
+                onResult(false, "Shop not found in your list")
+            } else {
+                userRef.update("savedShop", FieldValue.arrayRemove(shopId))
+                    .addOnSuccessListener {
+                        onResult(true, "Shop removed successfully")
+                    }.addOnFailureListener { e ->
+                        onResult(false, e.message)
+                    }
+            }
+        }.addOnFailureListener { e ->
+            onResult(false, e.message)
+        }
+
+
+
+    }
 
 }
 

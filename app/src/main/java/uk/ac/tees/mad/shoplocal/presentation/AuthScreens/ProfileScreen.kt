@@ -1,6 +1,7 @@
 package uk.ac.tees.mad.shoplocal.presentation.AuthScreens
 
 import android.R.attr.textColor
+import android.R.id.home
 import android.app.Activity
 import android.content.ContentResolver
 import android.content.Intent
@@ -12,6 +13,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.scaleIn
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,15 +27,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -53,7 +61,9 @@ import androidx.compose.ui.input.key.Key.Companion.U
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil3.compose.AsyncImage
@@ -62,6 +72,7 @@ import coil3.compose.rememberAsyncImagePainter
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import uk.ac.tees.mad.careerconnect.data.remote.uriToByteArray
 import uk.ac.tees.mad.shoplocal.R
 import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.HomeViewModel
 import uk.ac.tees.mad.shoplocal.ui.BottomNavigation
@@ -83,6 +94,7 @@ fun ProfileScreen(
     val context = LocalContext.current
     var update by remember { mutableStateOf(false) }
     var newName by rememberSaveable { mutableStateOf("") }
+    var newMobileNum by rememberSaveable { mutableStateOf("") }
     var isLoading by rememberSaveable { mutableStateOf(false) }
     val cornerShape = RoundedCornerShape(14.dp)
     var isEditing by rememberSaveable { mutableStateOf(false) }
@@ -97,8 +109,8 @@ fun ProfileScreen(
 
     val state by painter.state.collectAsState()
     var selectedImageUri by remember { mutableStateOf<Uri?>(null) }
-    val bgColor = MaterialTheme.colorScheme.onBackground
-    val textColor = MaterialTheme.colorScheme.background
+    val bgColor = MaterialTheme.colorScheme.background
+    val textColor = MaterialTheme.colorScheme.onBackground
     val defaulImagetUri = Uri.parse(
         "${ContentResolver.SCHEME_ANDROID_RESOURCE}://${context.packageName}/${R.drawable.default_profile}"
 
@@ -155,7 +167,7 @@ fun ProfileScreen(
                 .padding(innerPadding)
         ) {
 
-            Column (
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
@@ -234,7 +246,7 @@ fun ProfileScreen(
                             }, modifier = Modifier
                                 .size(35.dp)
                                 .background(
-                                    color = Color(0xFF4B914F), CircleShape
+                                    color = Color(0xFF0184FE), CircleShape
                                 )
                                 .size(30.dp)
 
@@ -283,6 +295,201 @@ fun ProfileScreen(
 
                 }
                 Spacer(modifier = Modifier.height(8.dp))
+
+                OutlinedTextField(
+                    value = if (isEditing) newName else currentUser.name,
+                    enabled = isEditing,
+                    onValueChange = { input ->
+                        newName = input.split(" ").joinToString(" ") { word ->
+                            if (word.isNotEmpty()) word.replaceFirstChar { it.uppercase() }
+                            else word
+                        }
+                    },
+                    label = { Text("Name", color = textColor) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = cornerShape,
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor = textColor,
+                        unfocusedTextColor = textColor,
+                        cursorColor = textColor,
+                        disabledTextColor = textColor,
+                        focusedContainerColor = bgColor,
+                        unfocusedContainerColor = bgColor,
+                        disabledContainerColor = bgColor,
+                        focusedIndicatorColor = textColor,
+                        unfocusedIndicatorColor = textColor.copy(alpha = 0.5f),
+                        disabledIndicatorColor = textColor.copy(alpha = 0.3f),
+                        focusedLabelColor = textColor,
+                        unfocusedLabelColor = textColor.copy(alpha = 0.8f),
+                        disabledLabelColor = textColor.copy(alpha = 0.5f)
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = if (isEditing) newMobileNum else currentUser.mobNumber,
+                    enabled = isEditing,
+                    onValueChange = {
+                        newMobileNum = it
+                    },
+                    label = {
+                        Text(
+                            if (currentUser?.mobNumber.isNullOrEmpty()) "Add Mobile" else "Update Mobile",
+                            color = textColor
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = cornerShape,
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor = textColor,
+                        unfocusedTextColor = textColor,
+                        cursorColor = textColor,
+                        disabledTextColor = textColor,
+                        focusedContainerColor = bgColor,
+                        unfocusedContainerColor = bgColor,
+                        disabledContainerColor = bgColor,
+                        focusedIndicatorColor = textColor,
+                        unfocusedIndicatorColor = textColor.copy(alpha = 0.5f),
+                        disabledIndicatorColor = textColor.copy(alpha = 0.3f),
+                        focusedLabelColor = textColor,
+                        unfocusedLabelColor = textColor.copy(alpha = 0.8f),
+                        disabledLabelColor = textColor.copy(alpha = 0.5f)
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextField(
+                    value = if (isEditing) currentUser.email else currentUser.email,
+                    enabled = false,
+                    onValueChange = {
+
+                    },
+                    label = {
+                        Text(
+                            " Email ", color = textColor
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = cornerShape,
+                    isError = showError,
+                    colors = TextFieldDefaults.colors(
+                        focusedTextColor = textColor,
+                        unfocusedTextColor = textColor,
+                        cursorColor = textColor,
+                        disabledTextColor = textColor,
+                        focusedContainerColor = bgColor,
+                        unfocusedContainerColor = bgColor,
+                        disabledContainerColor = bgColor,
+                        focusedIndicatorColor = textColor,
+                        unfocusedIndicatorColor = textColor.copy(alpha = 0.5f),
+                        disabledIndicatorColor = textColor.copy(alpha = 0.3f),
+                        focusedLabelColor = textColor,
+                        unfocusedLabelColor = textColor.copy(alpha = 0.8f),
+                        disabledLabelColor = textColor.copy(alpha = 0.5f)
+                    )
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+
+                if (isEditing) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        OutlinedButton(
+                            onClick = { isEditing = false },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            border = BorderStroke(1.dp, textColor)
+                        ) {
+                            Text("Cancel", color = textColor)
+                        }
+                        Spacer(modifier = Modifier.weight(0.1f))
+                        Button(
+
+
+                            onClick = {
+                                isLoading = true
+                                val profielImageByteArray = imageUri.uriToByteArray(context)
+                                profielImageByteArray?.let() {
+                                    homeViewModel.updateProfile(
+                                        ProfielImageByteArray = profielImageByteArray,
+                                        name = if (newName.isNotBlank()) newName else currentUser.name,
+                                        mob = if (newName.isNotBlank()) newName else currentUser.mobNumber,
+                                        onResult = { message, boolean ->
+                                            if (boolean) {
+                                                Toast.makeText(
+                                                    context, message, Toast.LENGTH_SHORT
+                                                ).show()
+
+                                                isEditing = false
+                                                isLoading = false
+
+                                            } else {
+                                                isLoading = false
+
+                                                Toast.makeText(
+                                                    context, message, Toast.LENGTH_SHORT
+                                                ).show()
+                                            }
+
+                                        },
+                                    )
+                                }
+
+                            },
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFF0184FE)
+                            )
+                        ) {
+
+
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    strokeWidth = 2.dp,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            } else {
+                                Text(
+                                    "Update",
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                )
+                            }
+                        }
+                    }
+                }
+                Button(
+                    onClick = {
+                        homeViewModel.logoutUser()
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 24.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF0184FE)
+                    )
+                ) {
+                    Text(
+                        text = "Log Out",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+
+
+
+
             }
 
 
