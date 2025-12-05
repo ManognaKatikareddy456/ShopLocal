@@ -7,10 +7,8 @@ import uk.ac.tees.mad.shoplocal.data.remote.yelpDto.YelpBusinessResponse
 interface YelpRepository {
 
     suspend fun getBusinesses(
-        term: String,
-        cityName: String,
-//        latitude: Double,
-//        longitude: Double,
+        term: String, latitude: Double,
+        longitude: Double,
     ): Result<YelpBusinessResponse>
 
     suspend fun fetchPagedBusinesses(

@@ -15,17 +15,14 @@ class YelpRepositoryImpl @Inject constructor(
 ) : YelpRepository {
 
     override suspend fun getBusinesses(
-        term: String,
-        cityName: String
-//        latitude: Double,
-//        longitude: Double,
+        term: String, latitude: Double,
+        longitude: Double,
     ): Result<YelpBusinessResponse> {
         return try {
             val response = api.getLocalBusinesses(
                 term = term,
-                city =cityName
-//                latitude =latitude ,
-//                longitude = longitude
+                latitude =latitude ,
+                longitude = longitude
             )
 
             if (response.isSuccessful && response.body() != null) {

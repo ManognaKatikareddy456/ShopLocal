@@ -6,22 +6,16 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import uk.ac.tees.mad.shoplocal.domain.reposiotry.YelpRepository
 
-class YelpUseCase(private val yelpRepository: YelpRepository) {
+class YelpUseCase (private val yelpRepository: YelpRepository){
 
 
-    operator fun invoke(
-        term: String,
-        cityName: String,
-
-//                        latitude: Double,
-//                         longitude: Double,
-    ) = flow {
+    operator fun invoke(term: String,latitude: Double,
+                         longitude: Double,) = flow {
         emit(
             value = yelpRepository.getBusinesses(
                 term = term,
-                cityName = cityName
-//                latitude = latitude,
-//                longitude = longitude,
+                latitude = latitude,
+                longitude = longitude,
             )
         )
     }.catch { error ->

@@ -10,18 +10,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuth
 import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.AuthScreen
 
 
 import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.HomeScreen
 import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.LoginScreen
-import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.MyShopScreen
-import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.ProfileScreen
 
 import uk.ac.tees.mad.shoplocal.presentation.AuthScreens.SingInScreen
-import uk.ac.tees.mad.shoplocal.presentation.HomeScreens.ShopDetailScreen
 import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.AuthViewModel
 import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.HomeViewModel
 
@@ -58,7 +54,7 @@ fun Navigation(
         composable<Routes.AuthScreen> {
 
 
-            AuthScreen(
+         AuthScreen(
                 navController = navController,
             )
 
@@ -94,48 +90,6 @@ fun Navigation(
                 navController = navController
             )
 
-        }
-
-        composable<Routes.MyShops> {
-            MyShopScreen(navController =navController, homeViewModel = homeViewModel)
-
-        }
-
-
-
-        composable<Routes.ProfileScreen> {
-
-
-            ProfileScreen(navController = navController, homeViewModel = homeViewModel)
-
-
-
-        }
-
-
-
-
-        composable<Routes.ShopDetailArgs> {
-            val args = it.toRoute<Routes.ShopDetailArgs>()
-
-            ShopDetailScreen(
-                id = args.id,
-                name = args.name,
-                rating = args.rating,
-                review_count = args.reviewCount,
-                phone = args.phone,
-                url = args.url,
-                image_url = args.imageUrl,
-                address1 = args.address1,
-                city = args.city,
-                state = args.state,
-                country = args.country,
-                latitude = args.latitude,
-                longitude = args.longitude,
-                price = args.price,
-                navController = navController,
-                homeViewModel = homeViewModel
-            )
         }
 
 
