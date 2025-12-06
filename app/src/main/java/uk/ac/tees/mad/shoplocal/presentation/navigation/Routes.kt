@@ -21,9 +21,6 @@ sealed class Routes {
     data object ProfileScreen
 
     @Serializable
-    data object MyShops
-
-    @Serializable
     data class ShopDetailArgs(
         val id: String,
         val name: String,
