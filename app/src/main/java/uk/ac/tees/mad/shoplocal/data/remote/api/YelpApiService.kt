@@ -13,9 +13,10 @@ interface YelpApiService {
     suspend fun getLocalBusinesses(
         @Header("Authorization") authHeader: String = APIKEY,
         @Query("term") term: String,
-        @Query("latitude") latitude: Double,
-        @Query("longitude") longitude: Double,
-        @Query("limit") limit: Int = 10
+//        @Query("latitude") latitude: Double,
+//        @Query("longitude") longitude: Double,
+        @Query("location") city: String,
+        @Query("limit") limit: Int = 40
     ): Response<YelpBusinessResponse>
 
 
