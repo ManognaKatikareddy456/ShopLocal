@@ -16,7 +16,7 @@ interface YelpApiService {
 //        @Query("latitude") latitude: Double,
 //        @Query("longitude") longitude: Double,
         @Query("location") city: String,
-        @Query("limit") limit: Int = 10
+        @Query("limit") limit: Int = 40
     ): Response<YelpBusinessResponse>
 
 
