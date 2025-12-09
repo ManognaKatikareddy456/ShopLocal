@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -44,6 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -315,3 +317,138 @@ fun ShopDetailScreen(
 
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "ShopLocal – Shop Detail Screen")
+@Composable
+fun ShopDetailScreenPreview() {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "The Coffee Corner",
+                        color = Color.Black,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0184FE))
+            )
+        },
+        floatingActionButton = {
+            Column(
+                modifier = Modifier.padding(horizontal = 7.dp, vertical = 70.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                FloatingActionButton(
+                    onClick = {},
+                    containerColor = Color(0xFF0184FE),
+                    contentColor = Color.White,
+                    modifier = Modifier.size(56.dp)
+                ) {
+                    Icon(Icons.Default.LocationOn, contentDescription = "Open Map")
+                }
+
+                FloatingActionButton(
+                    onClick = {},
+                    containerColor = Color.White,
+                    contentColor = Color(0xFF0184FE),
+                    modifier = Modifier.size(56.dp)
+                ) {
+                    Icon(Icons.Default.FavoriteBorder, contentDescription = "Add to Favorites")
+                }
+            }
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(10.dp)
+                    .height(250.dp)
+            ) {
+                AsyncImage(
+                    model = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800",
+                    contentDescription = "Shop Image",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Column(modifier = Modifier.padding(horizontal = 24.dp)) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = "The Coffee Corner",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 22.sp,
+                    color = MaterialTheme.colorScheme.onBackground
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Star, contentDescription = null, tint = Color(0xFFFFE100), modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text("4.8 • 342 reviews", color = Color(0xFFFFE100), fontSize = 15.sp)
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.LocationOn, contentDescription = null, tint = Color(0xFF0184FE), modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = "123 High Street, Middlesbrough, England, UK",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 15.sp
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { }
+                ) {
+                    Icon(Icons.Default.Call, contentDescription = null, tint = Color(0xFF0184FE), modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "+44 1642 123456",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 14.sp,
+                        textDecoration = TextDecoration.Underline
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.clickable { }
+                ) {
+                    Icon(Icons.Default.Language, contentDescription = null, tint = Color(0xFF0184FE), modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "Visit Website",
+                        color = MaterialTheme.colorScheme.onBackground,
+                        fontSize = 14.sp,
+                        textDecoration = TextDecoration.Underline
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
+}

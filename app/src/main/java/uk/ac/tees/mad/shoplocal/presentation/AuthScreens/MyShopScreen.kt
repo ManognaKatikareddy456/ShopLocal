@@ -6,6 +6,7 @@ import android.icu.text.CaseMap
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,10 +44,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import uk.ac.tees.mad.shoplocal.data.local.ShopEntity
 import uk.ac.tees.mad.shoplocal.presentation.Viewmodels.HomeViewModel
@@ -250,6 +254,128 @@ fun MyShoopCard(shopEntity: ShopEntity, navHostController: NavHostController,hom
 
 
 
+        }
+    }
+}
+
+
+@Preview(showBackground = true, name = "My Shops – With Saved Shops")
+@Composable
+fun MyShopScreenPreview_WithShops() {
+    val sampleShops = listOf(
+        ShopEntity(
+            id = "1",
+            name = "The Coffee Corner",
+            rating = "4.8",
+            reviewCount = "342",
+            price = "$$",
+            phone = "+44 1642 123456",
+            url = "",
+            imageUrl = "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800",
+            address1 = "123 High Street",
+            city = "Middlesbrough",
+            state = "England",
+            country = "UK",
+            latitude = "54.5767",
+            longitude = "-1.2346"
+        ),
+        ShopEntity(
+            id = "2",
+            name = "Green Leaf Books",
+            rating = "4.9",
+            reviewCount = "189",
+            price = "$",
+            phone = "+44 1642 789012",
+            url = "",
+            imageUrl = "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800",
+            address1 = "45 Albert Road",
+            city = "Middlesbrough",
+            state = "England",
+            country = "UK",
+            latitude = "54.5755",
+            longitude = "-1.2350"
+        ),
+        ShopEntity(
+            id = "3",
+            name = "Bakers Delight",
+            rating = "4.6",
+            reviewCount = "567",
+            price = "$",
+            phone = "+44 1642 345678",
+            url = "",
+            imageUrl = "https://images.unsplash.com/photo-1509440154593-7fc03a7f9d79?w=800",
+            address1 = "78 Linthorpe Road",
+            city = "Middlesbrough",
+            state = "England",
+            country = "UK",
+            latitude = "54.5772",
+            longitude = "-1.2331"
+        )
+    )
+
+    Scaffold(
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(66.dp)
+                    .background(Color.White.copy(alpha = 0.95f))
+            )
+        }
+    ) { paddingValues ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            items(sampleShops) { shop ->
+                MyShoopCard(
+                    shopEntity = shop, navHostController = rememberNavController(),
+                    homeViewModel = TODO()
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, name = "My Shops – Empty State")
+@Composable
+fun MyShopScreenPreview_Empty() {
+    Scaffold(
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(66.dp)
+                    .background(Color.White.copy(alpha = 0.95f))
+            )
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "No saved shops yet",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Gray
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "Browse and save your favorite local shops!",
+                    fontSize = 16.sp,
+                    color = Color.Gray.copy(alpha = 0.8f),
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }

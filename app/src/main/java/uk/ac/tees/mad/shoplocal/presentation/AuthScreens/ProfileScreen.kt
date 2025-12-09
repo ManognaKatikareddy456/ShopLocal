@@ -62,6 +62,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -419,7 +420,7 @@ fun ProfileScreen(
                                     homeViewModel.updateProfile(
                                         ProfielImageByteArray = profielImageByteArray,
                                         name = if (newName.isNotBlank()) newName else currentUser.name,
-                                        mob = if (newName.isNotBlank()) newName else currentUser.mobNumber,
+                                        mob = if (newMobileNum.isNotBlank()) newMobileNum else currentUser.mobNumber,
                                         onResult = { message, boolean ->
                                             if (boolean) {
                                                 Toast.makeText(
@@ -493,6 +494,128 @@ fun ProfileScreen(
             }
 
 
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true, name = "ShopLocal – Profile Screen")
+@Composable
+fun ProfileScreenPreview() {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "Profile",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White
+                    )
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color(0xFF0184FE))
+            )
+        },
+        bottomBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(66.dp)
+                    .background(Color.White)
+            )
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(contentAlignment = Alignment.BottomEnd) {
+                AsyncImage(
+                    model = "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800",
+                    contentDescription = "Profile",
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier
+                        .size(35.dp)
+                        .background(Color(0xFF0184FE), CircleShape)
+                ) {
+                    Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White, modifier = Modifier.size(20.dp))
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            OutlinedTextField(
+                value = "Sarah Johnson",
+                onValueChange = {},
+                label = { Text("Name") },
+                enabled = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = "+44 7700 900123",
+                onValueChange = {},
+                label = { Text("Update Mobile") },
+                enabled = true,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedTextField(
+                value = "sarah.j@example.com",
+                onValueChange = {},
+                label = { Text("Email") },
+                enabled = false,
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(14.dp)
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutlinedButton(
+                    onClick = {},
+                    modifier = Modifier.weight(1f),
+                    border = BorderStroke(1.dp, Color.Black)
+                ) {
+                    Text("Cancel")
+                }
+
+                Button(
+                    onClick = {},
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0184FE))
+                ) {
+                    Text("Update", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = {},
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0184FE))
+            ) {
+                Text("Log Out", color = Color.White, fontWeight = FontWeight.Bold)
+            }
         }
     }
 }

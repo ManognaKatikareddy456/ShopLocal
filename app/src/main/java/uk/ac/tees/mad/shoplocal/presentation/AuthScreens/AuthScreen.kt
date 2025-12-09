@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -107,4 +108,83 @@ fun AuthScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
+}
+
+
+
+@Preview(showBackground = true, name = "Auth Screen")
+@Composable
+fun AuthScreenPreview() {
+    val blueText = Color(0xFF0184FE)
+
+    Box(modifier = Modifier.fillMaxSize().padding(20.dp)) {
+        Column(
+            modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(60.dp))
+
+            Text(
+                text = "Welcome to ShopLocal",
+                style = MaterialTheme.typography.headlineSmall.copy(
+                    color = blueText,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Text(
+                text = "Find and support shops near you easily.",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.Gray,
+                    fontSize = 15.sp
+                ),
+                modifier = Modifier.padding(horizontal = 20.dp),
+                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+            )
+
+            Spacer(modifier = Modifier.height(30.dp))
+
+            Image(
+                painter = painterResource(id = R.drawable.app_logo),
+                contentDescription = "Shop illustration",
+                modifier = Modifier
+                    .height(200.dp)
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            )
+        }
+
+        Column(
+            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Button(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(containerColor = blueText),
+                modifier = Modifier.fillMaxWidth().height(50.dp),
+                shape = RoundedCornerShape(12.dp)
+            ) {
+                Text(
+                    text = "Get Started",
+                    color = Color.Black,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            TextButton(onClick = {}) {
+                Text(
+                    text = "Already have an account? Log in",
+                    color = blueText,
+                    fontSize = 14.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+    }
 }
